@@ -17,50 +17,42 @@ void Schedule::loadSchedule(string filename)
         getline(s, startHour, ',');
         getline(s, endHour, ',');
         getline(s, task, ',');
-        cout << "Start Hour: " << startHour << ", End Hour: " << endHour << ", Task: " << task << endl;
+        cout << startHour << " : " << endHour << " - " << task << endl;
     }
     file.close();
 }
 
-// Function to convert a string to lowercase
-std::string toLower(std::string str)
-{
-
-    for (char& c : str)
-    {
-        if (c >= 'A' && c <= 'Z')
-        {
-            c = c + 32; // Convert uppercase to lowercase
-        }
-    }
-    return str;
-}
-
-
+/**
+ * @brief Edits the schedule by replacing the task associated with a specific starting hour.
+ * 
+ * This function takes a filename as input and opens the file for reading. It prompts the user to enter the starting hour to edit and the new task. 
+ * It then searches for the starting hour in the file and replaces the task with the new task. The modified schedule is written to a temporary file.
+ * Finally, the original file is deleted and the temporary file is renamed to the original filename.
+ * 
+ * @param filename The name of the file containing the schedule.
+ */
 void Schedule::editSchedule(string filename)
 {
-    ifstream file;
-    ofstream tempFile;
-    file.open(filename);
-    tempFile.open("temp.txt");
-
+    ifstream file(filename);
     if (!file.is_open())
     {
         cout << "Error: File not found" << endl;
         return;
     }
 
-    string line;
-    cout << "Enter the starting hour to edit: ";
-    cin.ignore();
-    string startHour;
-    getline(cin, startHour);
-
+    string tempFilename = "temp.txt";
+    ofstream tempFile(tempFilename);
+    int startHour;
     string newTask;
+    cout << "Enter the starting hour to edit: ";
+    cin >> startHour;
+
     cout << "Enter the new task: ";
+    cin.ignore(); // Ignore the newline character left in the input stream
     getline(cin, newTask);
 
     bool found = false;
+    string line;
     while (getline(file, line))
     {
         stringstream s(line);
@@ -68,17 +60,23 @@ void Schedule::editSchedule(string filename)
         getline(s, currentStartHour, ',');
         getline(s, endHour, ',');
         getline(s, task, ',');
-
-        // Convert both hours to the same format for comparison
-        string formattedCurrentStartHour = currentStartHour.substr(0, 2) + ":" + currentStartHour.substr(3, 2);
-        if (toLower(formattedCurrentStartHour) == toLower(startHour))
+        try
         {
-            tempFile << currentStartHour << "," << endHour << "," << newTask << endl;
-            found = true;
+            int currentStartHourInt = std::stoi(currentStartHour);
+            if (currentStartHourInt == startHour)
+            {
+                tempFile << currentStartHour << "," << endHour << "," << newTask << endl;
+                found = true;
+            }
+            else
+            {
+                tempFile << line << endl;
+            }
         }
-        else
+        catch (const std::invalid_argument& e)
         {
-            tempFile << line << endl;
+            // Handle the case when the conversion fails
+            cout << "Invalid starting hour: " << currentStartHour << endl;
         }
     }
 
@@ -86,7 +84,7 @@ void Schedule::editSchedule(string filename)
     tempFile.close();
 
     remove(filename.c_str());
-    rename("temp.txt", filename.c_str());
+    rename(tempFilename.c_str(), filename.c_str());
 
     if (found)
     {

@@ -7,6 +7,7 @@ int main()
     Schedule schedule;
     schedule.loadSchedule(filename);
     schedule.editSchedule(filename);
+    schedule.loadSchedule(filename);
 
     return 0;
 }

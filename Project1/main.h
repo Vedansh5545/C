@@ -7,6 +7,10 @@
 #include <string>
 #include <fstream>
 #include <filesystem>
+#include <sstream>
+#include <algorithm> // for std::transform
+#include <cctype>    // for std::tolower
+
 
 
 using namespace std;

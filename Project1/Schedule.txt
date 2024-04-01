@@ -1,0 +1,24 @@
+00:00 - 01:00: Sleeping
+01:00 - 02:00: Sleeping
+02:00 - 03:00: Sleeping
+03:00 - 04:00: Sleeping
+04:00 - 05:00: Sleeping
+05:00 - 06:00: Sleeping
+06:00 - 07:00: Sleeping
+07:00 - 08:00: Breakfast and Getting Ready
+08:00 - 09:00: Math Class
+09:00 - 10:00: Math Class
+10:00 - 11:00: Physics Lecture
+11:00 - 12:00: Physics Lecture
+12:00 - 13:00: Lunch
+13:00 - 14:00: Study Session
+14:00 - 15:00: Study Session
+15:00 - 16:00: Computer Science Lab
+16:00 - 17:00: Computer Science Lab
+17:00 - 18:00: Free Time
+18:00 - 19:00: Gym Workout
+19:00 - 20:00: Dinner
+20:00 - 21:00: Study Session
+21:00 - 22:00: Relaxation Time
+22:00 - 23:00: Wind Down and Sleep Preparation
+23:00 - 00:00: Wind Down and Sleep Preparation

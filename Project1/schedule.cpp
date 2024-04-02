@@ -95,3 +95,65 @@ void Schedule::editSchedule(string filename)
         cout << "Starting hour not found" << endl;
     }
 }
+
+
+void Schedule::inputSchedule(string filename)
+{
+    ofstream file(filename, std::ios_base::app); // Open file in append mode
+    if (!file.is_open())
+    {
+        cout << "Error: File not found" << endl;
+        return;
+    }
+
+    int startHour, endHour;
+    string task;
+    cout << "Enter start hour: ";
+    cin >> startHour;
+    cout << "Enter end hour: ";
+    cin >> endHour;
+    cout << "Enter task: ";
+    cin.ignore(); // Ignore the newline character left in the input stream
+    getline(cin, task);
+
+    file << startHour << "," << endHour << "," << task << endl;
+    file.close();
+
+    cout << "Schedule added successfully" << endl;
+}
+
+
+void Schedule::displaySchedule(string filename)
+{
+    ifstream file;
+    file.open(filename);
+    if (!file.is_open())
+    {
+        cout << "Error: File not found" << endl;
+        return;
+    }
+    string line;
+    while (getline(file, line))
+    {
+        stringstream s(line);
+        string startHour, endHour, task;
+        getline(s, startHour, ',');
+        getline(s, endHour, ',');
+        getline(s, task, ',');
+        cout << startHour << " : " << endHour << " - " << task << endl;
+    }
+    file.close();
+}
+
+void Schedule::clearSchedule(string filename)
+{
+    ofstream file(filename);
+    if (!file.is_open())
+    {
+        cout << "Error: File not found" << endl;
+        return;
+    }
+    file.clear();
+    file.close();
+    cout << "Schedule cleared successfully" << endl;
+}

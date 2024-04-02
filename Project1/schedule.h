@@ -14,6 +14,9 @@ class Schedule
     public:
         void loadSchedule(string filename);
         void editSchedule(string filename);
+        void inputSchedule(string filename);
+        void displaySchedule(string filename);
+        void clearSchedule(string filename);
 };
 
 

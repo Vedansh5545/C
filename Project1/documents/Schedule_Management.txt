@@ -1,0 +1,35 @@
+Schedule Management System Documentation
+
+1. Introduction
+
+The Schedule Management System is a software application designed to help users manage their daily schedules, including class schedules, extracurricular activities, and other commitments. The system provides a visual representation of the user's schedule and allows them to set reminders for upcoming events or classes.
+
+2. Features
+
+- Input Class Schedule: Users can input their class schedule, including the name of the class and the date and time it occurs.
+- Input Extracurricular Activities: Users can input their extracurricular activities, including the name of the activity and the date and time it occurs.
+- Input Other Commitments: Users can input other commitments, such as appointments or meetings, including the name of the commitment and the date and time it occurs.
+- Visual Representation: The system provides a visual representation of the user's daily and weekly schedule, making it easy to see upcoming events at a glance.
+- Set Reminders: Users can set reminders for upcoming events or classes, ensuring they don't forget important commitments.
+
+3. Usage
+
+- Adding Events: To add a class, activity, or commitment, the user selects the appropriate option from the menu and enters the details (name, date, time).
+- Viewing Schedule: The user can view their schedule by selecting the "Display Schedule" option from the menu. They can choose to view their schedule daily, weekly, monthly, or yearly.
+- Setting Reminders: To set a reminder, the user selects the "Set Reminder" option from the menu and enters the details (name, date, time).
+
+4. Implementation
+
+- The system is implemented using C++ and consists of a Schedule class that manages the user's schedule.
+- The Schedule class uses vectors to store the user's classes, activities, commitments, and reminders.
+- Each event is represented by a struct containing the name of the event and the date and time it occurs.
+
+5. Future Enhancements
+
+- Add the ability to edit and delete events.
+- Implement a notification system for reminders.
+- Allow users to categorize events (e.g., school, work, personal) for better organization.
+
+6. Conclusion
+
+The Schedule Management System is a valuable tool for users to manage their schedules effectively. By providing a visual representation of their schedule and the ability to set reminders, the system helps users stay organized and on track with their commitments.

@@ -1,23 +1,51 @@
-// Last modified: 3/25/2021
-// Created by: Vedansh Tembhre
-// This file contains the header files that are used in the schedule.cpp file
-
-#ifndef Schedule_H_
-#define Schedule_H_
+#ifndef SCHEDULE_H
+#define SCHEDULE_H
 
 #include "main.h"
 
-class Schedule
-{
-    private:
-        
-    public:
-        void loadSchedule(string filename);
-        void editSchedule(string filename);
-        void inputSchedule(string filename);
-        void displaySchedule(string filename);
-        void clearSchedule(string filename);
+struct Event {
+    std::string name;
+    std::tm datetime;
 };
 
+class Schedule {
+private:
+    std::vector<Event> classes;
+    std::vector<Event> activities;
+    std::vector<Event> commitments;
+    std::vector<Event> reminders;
 
-#endif  // Schedule_H_
+public:
+    Schedule();
+    ~Schedule();
+
+    void addClass(const std::string& name, const std::tm& datetime);
+    void addActivity(const std::string& name, const std::tm& datetime);
+    void addCommitment(const std::string& name, const std::tm& datetime);
+    void addReminder(const std::string& name, const std::tm& datetime);
+
+    void displaySchedule();
+    void displayReminders();
+    void displayUpcoming();
+    void displayDaily();
+    void displayWeekly();
+    void displayMonthly();
+    void displayYearly();
+    void displayAll();
+
+    void removeClass(const std::string& name);
+    void removeActivity(const std::string& name);
+    void removeCommitment(const std::string& name);
+    void removeReminder(const std::string& name);
+
+    void editClass(const std::string& name, const std::tm& datetime);
+    void editActivity(const std::string& name, const std::tm& datetime);
+    void editCommitment(const std::string& name, const std::tm& datetime);
+    void editReminder(const std::string& name, const std::tm& datetime);
+
+    void saveSchedule();
+    void loadSchedule();
+
+};
+
+#endif // SCHEDULE_H

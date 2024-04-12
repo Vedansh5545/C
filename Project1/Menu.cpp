@@ -1,7 +1,6 @@
 #include "Menu.h"
 #include "schedule.h"
 
-
 void displayMenu() {
     Schedule schedule;
     cout << "Welcome to the Student Assistant!" << endl;
@@ -28,7 +27,7 @@ void displayMenu() {
     std::stringstream ss;
 
     switch (choice) {
-        case 1:
+        case 1: {
             cout << "Schedule Management" << endl;
             cout << endl;
             cout << "Choose an option:" << endl;
@@ -61,10 +60,8 @@ void displayMenu() {
             int subChoice;
             cin >> subChoice;
 
-
             switch (subChoice) {
-                case 1:
-
+                case 1: {
                     cout << "Enter class name: ";
                     cin >> name;
 
@@ -82,6 +79,7 @@ void displayMenu() {
 
                     schedule.addClass(name, classDateTime);
                     break;
+                }
                 case 2:
                     // addActivity(name, datetime);
                     break;
@@ -153,6 +151,7 @@ void displayMenu() {
                     break;
             }
             break;
+        }
         case 2:
             cout << "Task Tracking" << endl;
             break;

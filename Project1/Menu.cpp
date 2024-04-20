@@ -4,6 +4,7 @@
 void displayMenu() {
     Schedule schedule;
     cout << "Welcome to the Student Assistant!" << endl;
+    cout << endl;
     cout << "Choose an option:" << endl;
     cout << "1. Schedule Management" << endl;
     cout << "2. Task Tracking" << endl;
@@ -60,29 +61,73 @@ void displayMenu() {
             int subChoice;
             cin >> subChoice;
 
+            std::tm classDateTime = {};
+            std::tm activityDateTime = {};
+
             switch (subChoice) {
-                case 1: {
-                    cout << "Enter class name: ";
+            case 1: {
+                cout << "Enter class name: ";
+                cin.ignore();  // Ignore the newline character from previous input
+                getline(cin, name);  // Using getline to allow space in names
+
+                int choice;
+                cout << "Choose:\n1. Enter specific date and time\n2. Use current date and time\nEnter choice: ";
+                cin >> choice;
+                cin.ignore();  // To ignore the newline character after cin
+
+                std::string date, time, datetime;
+                std::tm classDateTime = {};  // Zero-initialize tm structure
+
+                if (choice == 1) {
+                    cout << "Enter activity date (YYYY-MM-DD): ";
+                    getline(cin, date);
+
+                    cout << "Enter activity time (HH:MM:SS): ";
+                    getline(cin, time);
+
+                    datetime = date + " " + time;
+                } else if (choice == 2) {
+                    // Get current time and format it
+                    auto t = std::time(nullptr);
+                    auto localTime = *std::localtime(&t);
+                    std::ostringstream ss;
+                    ss << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
+                    datetime = ss.str();
+                } else {
+                    cout << "Invalid choice." << endl;
+                    break;  // Exit switch case if invalid option
+                }
+
+                std::istringstream ss(datetime);
+                ss >> std::get_time(&classDateTime, "%Y-%m-%d %H:%M:%S");
+                if (ss.fail()) {
+                    cout << "Failed to parse date and time." << endl;
+                    break;  // Exit switch case on failure to parse
+                }
+
+                schedule.addClass(name, classDateTime);
+                break;
+            }
+                case 2: {
+                    // addActivity(name, datetime);
+
+                    cout << "Enter activity name: ";
                     cin >> name;
 
-                    cout << "Enter class date (YYYY-MM-DD): ";
+                    cout << "Enter activity date (YYYY-MM-DD): ";
                     cin >> date;
 
-                    cout << "Enter class time (HH:MM:SS): ";
+                    cout << "Enter activity time (HH:MM:SS): ";
                     cin >> time;
 
                     datetime = date + " " + time;
 
                     ss.str(datetime);
-                    std::tm classDateTime = {};
-                    ss >> std::get_time(&classDateTime, "%Y-%m-%d %H:%M:%S");
+                    ss >> std::get_time(&activityDateTime, "%Y-%m-%d %H:%M:%S");
 
-                    schedule.addClass(name, classDateTime);
+                    schedule.addActivity(name, activityDateTime);
                     break;
                 }
-                case 2:
-                    // addActivity(name, datetime);
-                    break;
                 case 3:
                     // addCommitment(name, datetime);
                     break;

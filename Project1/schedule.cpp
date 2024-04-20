@@ -240,50 +240,65 @@ void Schedule::editReminder(const std::string& name, const std::tm& datetime) {
         }
     }
 }
-
 void Schedule::saveSchedule() {
-    std::ofstream file("schedule.txt");
-    if (file.is_open()) {
-        for (Event save : classes) {
-            file << "class " << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
+    std::ofstream classFile("Class.txt"), activityFile("Activity.txt"), commitmentFile("Commitment.txt"), reminderFile("Reminder.txt");
+
+    if (classFile.is_open()) {
+        for (const Event& save : classes) {
+            classFile << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
         }
-        for (Event save : activities) {
-            file << "activity " << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
+        classFile.close();
+    }
+
+    if (activityFile.is_open()) {
+        for (const Event& save : activities) {
+            activityFile << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
         }
-        for (Event save : commitments) {
-            file << "commitment " << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
+        activityFile.close();
+    }
+
+    if (commitmentFile.is_open()) {
+        for (const Event& save : commitments) {
+            commitmentFile << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
         }
-        for (Event save : reminders) {
-            file << "reminder " << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
+        commitmentFile.close();
+    }
+
+    if (reminderFile.is_open()) {
+        for (const Event& save : reminders) {
+            reminderFile << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
         }
-        file.close();
+        reminderFile.close();
     }
 }
 
 void Schedule::loadSchedule() {
-    std::ifstream file("schedule.txt");
+    loadEventsFromFile("Class.txt", "class");
+    loadEventsFromFile("Activity.txt", "activity");
+    loadEventsFromFile("Commitment.txt", "commitment");
+    loadEventsFromFile("Reminder.txt", "reminder");
+}
+
+void Schedule::loadEventsFromFile(const std::string& filename, const std::string& type) {
+    std::ifstream file(filename);
     if (file.is_open()) {
         std::string line;
         while (std::getline(file, line)) {
             std::istringstream iss(line);
-            std::string type;
             std::string name;
             std::tm datetime;
-            iss >> type >> name;
+            iss >> name;
             std::string datetimeString;
             iss >> datetimeString;
             std::istringstream datetimeStream(datetimeString);
             datetimeStream >> std::get_time(&datetime, "%c");
             if (type == "class") {
                 addClass(name, datetime);
-            }
-            else if (type == "activity") {
+            } else if (type == "activity") {
                 addActivity(name, datetime);
-            }
-            else if (type == "commitment") {
+            } else if (type == "commitment") {
                 addCommitment(name, datetime);
-            }
-            else if (type == "reminder") {
+            } else if (type == "reminder") {
                 addReminder(name, datetime);
             }
         }

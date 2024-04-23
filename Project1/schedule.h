@@ -38,7 +38,25 @@ public:
     void editClass();
     void saveClass();
     void loadClass();
-    void saveAllClasses();
+
+    void addActivity();
+    void removeActivity();
+    void editActivity();
+    void saveActivity();
+    void loadActivity();
+
+    void addCommitment();
+    void removeCommitment();
+    void editCommitment();
+    void saveCommitment();
+    void loadCommitment();
+
+    void addReminder();
+    void removeReminder();
+    void editReminder();
+    void saveReminder();
+    void loadReminder();
+
 };
 
 #endif // SCHEDULE_H

@@ -76,8 +76,20 @@ void Menu::displayScheduleMenu(){
     cout << "1. Add Class" << endl;
     cout << "2. Remove Class" << endl;
     cout <<"3. Edit Class" << endl;
+    cout << "4. Add Activity" << endl;
+    cout << "5. Remove Activity" << endl;
+    cout << "6. Edit Activity" << endl;
+    cout << "7. Add Commitment" << endl;
+    cout << "8. Remove Commitment" << endl;
+    cout << "9. Edit Commitment" << endl;
+    cout << "10. Add Reminder" << endl;
+    cout << "11. Remove Reminder" << endl;
+    cout << "12. Edit Reminder" << endl;
+    cout << "0. Back" << endl;
+
 
     int choice;
+    cout << "Enter your choice: ";
     cin >> choice;
     cin.ignore();  // Ignore the newline character from previous input
 
@@ -93,6 +105,60 @@ void Menu::displayScheduleMenu(){
         case 3:
             // Process Edit Class
             schedule.editClass();
+            break;
+
+        case 4:
+            // Process Add Activity
+            schedule.addActivity();
+            break;
+
+        case 5:
+            // Process Remove Activity
+            schedule.removeActivity();
+            break;
+        
+        case 6:
+            // Process Edit Activity
+            schedule.editActivity();
+            break;
+        
+        case 7:
+            // Process Add Commitment
+            schedule.addCommitment();
+            break;
+
+        case 8:
+            // Process Remove Commitment
+            schedule.removeCommitment();
+            break;
+
+        case 9:
+            // Process Edit Commitment
+            schedule.editCommitment();
+            break;
+        
+        case 10:
+
+            // Process Add Reminder
+            schedule.addReminder();
+            break;
+
+        case 11:
+            // Process Remove Reminder
+            schedule.removeReminder();
+            break;
+
+        case 12:
+
+            // Process Edit Reminder
+            schedule.editReminder();
+            break;
+
+        
+        
+        case 0:
+            // Return to previous menu
+            displayMenu();
             break;
         default:
             cout << "Invalid choice" << endl;

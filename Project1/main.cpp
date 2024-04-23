@@ -4,7 +4,10 @@
 
 
 int main() {
-    displayMenu();
+    Menu menu;
+    menu.displayMenu();
+
+
 
 
     return 0;

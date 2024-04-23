@@ -3,5 +3,10 @@
 #include <sstream> // Include the header file for stringstream
 
 
-void displayMenu();
+class Menu {
+public:
+    void displayMenu();
+    void displayScheduleMenu();
     
+};
+

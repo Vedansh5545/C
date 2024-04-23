@@ -1,307 +1,144 @@
 #include "schedule.h"
 
+void Schedule::addClass() {
+    std::cout << "Enter the name of the class: ";
+    std::string name;
+    std::getline(std::cin, name);
+
+    std::cout << "Do you want to use the current time? (Y/N): ";
+    char choice;
+    std::cin >> choice;
+    std::cin.ignore();
+
+    std::tm datetime = {};
+    if (tolower(choice) == 'n') {
+        std::cout << "Enter the date and time of the class (MM/DD/YYYY HH:MM): ";
+        std::string datetimeString;
+        std::getline(std::cin, datetimeString);
+
+        std::istringstream datetimeStream(datetimeString);
+        strptime(datetimeString.c_str(), "%m/%d/%Y %H:%M", &datetime);
+    } else {
+        std::time_t now = std::time(nullptr);
+        localtime_r(&now, &datetime);
+    }
+
+    classes.push_back(Event(name, datetime));
+    std::cout << "Class added successfully. Total classes: " << classes.size() << std::endl;
+}
+
+void Schedule::removeClass() {
+    std::cout << "Enter the name of the class to remove: ";
+    std::string name;
+    std::getline(std::cin, name);
+
+    std::vector<Event>::iterator it = classes.end();
+    for (std::vector<Event>::iterator i = classes.begin(); i != classes.end(); ++i) {
+        if (i->name == name) {
+            it = i;
+            break;
+        }
+    }
+
+    if (it != classes.end()) {
+        classes.erase(it);
+        std::cout << "Class removed successfully." << std::endl;
+    } else {
+        std::cout << "Class not found." << std::endl;
+    }
+}
+
+void Schedule::editClass() {
+    std::cout << "Enter the name of the class to edit: ";
+    std::string name;
+    std::getline(std::cin, name);
+
+    for (std::vector<Event>::iterator it = classes.begin(); it != classes.end(); ++it) {
+        if (it->name == name) {
+            std::cout << "Enter the new date and time of the class (MM/DD/YYYY HH:MM): ";
+            std::string datetimeString;
+            std::getline(std::cin, datetimeString);
+
+            std::istringstream datetimeStream(datetimeString);
+            std::tm datetime = {};
+            strptime(datetimeString.c_str(), "%m/%d/%Y %H:%M", &datetime);
+            it->datetime = datetime;
+
+            std::cout << "Class edited successfully." << std::endl;
+            return;
+        }
+    }
+    std::cout << "Class not found." << std::endl;
+}
+
+
+void Schedule::loadClass() {
+    std::ifstream file("classes.txt");
+    if (file.is_open()) {
+        classes.clear();
+        std::string line;
+        while (std::getline(file, line)) {
+            std::istringstream lineStream(line);
+            Event e;
+            lineStream >> e.name;
+            std::string datetimePart;
+            std::getline(lineStream, datetimePart);
+            std::istringstream datetimeStream(datetimePart);
+            strptime(datetimePart.c_str(), "%m/%d/%Y %H:%M", &e.datetime);
+            classes.push_back(e);
+        }
+        file.close();
+        std::cout << "Classes loaded from file." << std::endl;
+    } else {
+        std::cout << "Unable to open file for loading classes." << std::endl;
+    }
+}
+
+void Schedule::saveAllClasses() {
+    std::ofstream file("all_classes.txt", std::ios::trunc);
+    if (file.is_open()) {
+        for (const Event& e : classes) {
+            char buf[80];
+            strftime(buf, sizeof(buf), "%m/%d/%Y %H:%M", &e.datetime);
+            file << e.name << " " << buf << std::endl;
+        }
+        file.close();
+        std::cout << "All classes saved to file." << std::endl;
+    } else {
+        std::cout << "Unable to open file for saving all classes." << std::endl;
+    }
+}
+void Schedule::saveClass() {
+    std::ofstream file("./classes.txt", std::ios::trunc);  // Explicit relative path
+    if (file.is_open()) {
+        if (classes.empty()) {
+            std::cout << "Warning: No classes to save at final save." << std::endl;
+        } else {
+            for (const Event& e : classes) {
+                char buf[80];
+                strftime(buf, sizeof(buf), "%m/%d/%Y %H:%M", &e.datetime);
+                file << e.name << " " << buf << std::endl;
+                std::cout << "Final save: Writing to file: " << e.name << " " << buf << std::endl;
+            }
+            file.flush();
+            std::cout << "Final classes saved to file. Total classes written: " << classes.size() << std::endl;
+        }
+        file.close();
+    } else {
+        std::cout << "Unable to open file for final saving classes." << std::endl;
+    }
+}
+
+
 Schedule::Schedule() {
-    loadSchedule();
+    static int count = 0;
+    std::cout << "Constructing Schedule #" << ++count << ". Loading classes..." << std::endl;
+    loadClass();
+    std::cout << "Classes loaded from file at startup. Total classes: " << classes.size() << std::endl;
 }
 
 Schedule::~Schedule() {
-    saveSchedule();
-}
-
-void Schedule::addClass(const std::string& name, const std::tm& datetime) {
-    Event newClass;
-    newClass.name = name;
-    newClass.datetime = datetime;
-    classes.push_back(newClass);
-}
-
-void Schedule::addActivity(const std::string& name, const std::tm& datetime) {
-    Event newActivity;
-    newActivity.name = name;
-    newActivity.datetime = datetime;
-    activities.push_back(newActivity);
-}
-
-void Schedule::addCommitment(const std::string& name, const std::tm& datetime) {
-    Event newCommitment;
-    newCommitment.name = name;
-    newCommitment.datetime = datetime;
-    commitments.push_back(newCommitment);
-}
-
-void Schedule::addReminder(const std::string& name, const std::tm& datetime) {
-    Event newReminder;
-    newReminder.name = name;
-    newReminder.datetime = datetime;
-    reminders.push_back(newReminder);
-}
-
-void Schedule::displaySchedule() {
-    displayReminders();
-    displayUpcoming();
-}
-
-void Schedule::displayReminders() {
-    std::cout << "Reminders:" << std::endl;
-    for (Event reminder : reminders) {
-        std::cout << reminder.name << " - " << std::put_time(&reminder.datetime, "%c") << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-void Schedule::displayUpcoming() {
-    std::cout << "Upcoming:" << std::endl;
-    for (Event upcoming : classes) {
-        std::cout << upcoming.name << " - " << std::put_time(&upcoming.datetime, "%c") << std::endl;
-    }
-    for (Event upcoming : activities) {
-        std::cout << upcoming.name << " - " << std::put_time(&upcoming.datetime, "%c") << std::endl;
-    }
-    for (Event upcoming : commitments) {
-        std::cout << upcoming.name << " - " << std::put_time(&upcoming.datetime, "%c") << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-void Schedule::displayDaily() {
-    std::cout << "Daily:" << std::endl;
-    std::time_t now = std::time(0);
-    std::tm* today = std::localtime(&now);
-    for (Event daily : classes) {
-        if (daily.datetime.tm_year == today->tm_year && daily.datetime.tm_mon == today->tm_mon && daily.datetime.tm_mday == today->tm_mday) {
-            std::cout << daily.name << " - " << std::put_time(&daily.datetime, "%c") << std::endl;
-        }
-    }
-    for (Event daily : activities) {
-        if (daily.datetime.tm_year == today->tm_year && daily.datetime.tm_mon == today->tm_mon && daily.datetime.tm_mday == today->tm_mday) {
-            std::cout << daily.name << " - " << std::put_time(&daily.datetime, "%c") << std::endl;
-        }
-    }
-    for (Event daily : commitments) {
-        if (daily.datetime.tm_year == today->tm_year && daily.datetime.tm_mon == today->tm_mon && daily.datetime.tm_mday == today->tm_mday) {
-            std::cout << daily.name << " - " << std::put_time(&daily.datetime, "%c") << std::endl;
-        }
-    }
-    std::cout << std::endl;
-}
-
-void Schedule::displayWeekly() {
-    std::cout << "Weekly:" << std::endl;
-    std::time_t now = std::time(0);
-    std::tm* today = std::localtime(&now);
-    for (Event weekly : classes) {
-        if (weekly.datetime.tm_year == today->tm_year && weekly.datetime.tm_mon == today->tm_mon && weekly.datetime.tm_mday >= today->tm_mday && weekly.datetime.tm_mday < today->tm_mday + 7) {
-            std::cout << weekly.name << " - " << std::put_time(&weekly.datetime, "%c") << std::endl;
-        }
-    }
-    for (Event weekly : activities) {
-        if (weekly.datetime.tm_year == today->tm_year && weekly.datetime.tm_mon == today->tm_mon && weekly.datetime.tm_mday >= today->tm_mday && weekly.datetime.tm_mday < today->tm_mday + 7) {
-            std::cout << weekly.name << " - " << std::put_time(&weekly.datetime, "%c") << std::endl;
-        }
-    }
-    for (Event weekly : commitments) {
-        if (weekly.datetime.tm_year == today->tm_year && weekly.datetime.tm_mon == today->tm_mon && weekly.datetime.tm_mday >= today->tm_mday && weekly.datetime.tm_mday < today->tm_mday + 7) {
-            std::cout << weekly.name << " - " << std::put_time(&weekly.datetime, "%c") << std::endl;
-        }
-    }
-    std::cout << std::endl;
-}
-
-void Schedule::displayMonthly() {
-    std::cout << "Monthly:" << std::endl;
-    std::time_t now = std::time(0);
-    std::tm* today = std::localtime(&now);
-    for (Event monthly : classes) {
-        if (monthly.datetime.tm_year == today->tm_year && monthly.datetime.tm_mon == today->tm_mon) {
-            std::cout << monthly.name << " - " << std::put_time(&monthly.datetime, "%c") << std::endl;
-        }
-    }
-    for (Event monthly : activities) {
-        if (monthly.datetime.tm_year == today->tm_year && monthly.datetime.tm_mon == today->tm_mon) {
-            std::cout << monthly.name << " - " << std::put_time(&monthly.datetime, "%c") << std::endl;
-        }
-    }
-    for (Event monthly : commitments) {
-        if (monthly.datetime.tm_year == today->tm_year && monthly.datetime.tm_mon == today->tm_mon) {
-            std::cout << monthly.name << " - " << std::put_time(&monthly.datetime, "%c") << std::endl;
-        }
-    }
-    std::cout << std::endl;
-}
-
-void Schedule::displayYearly() {
-    std::cout << "Yearly:" << std::endl;
-    std::time_t now = std::time(0);
-    std::tm* today = std::localtime(&now);
-    for (Event yearly : classes) {
-        if (yearly.datetime.tm_year == today->tm_year) {
-            std::cout << yearly.name << " - " << std::put_time(&yearly.datetime, "%c") << std::endl;
-        }
-    }
-    for (Event yearly : activities) {
-        if (yearly.datetime.tm_year == today->tm_year) {
-            std::cout << yearly.name << " - " << std::put_time(&yearly.datetime, "%c") << std::endl;
-        }
-    }
-    for (Event yearly : commitments) {
-        if (yearly.datetime.tm_year == today->tm_year) {
-            std::cout << yearly.name << " - " << std::put_time(&yearly.datetime, "%c") << std::endl;
-        }
-    }
-    std::cout << std::endl;
-}
-
-void Schedule::displayAll() {
-    std::cout << "All:" << std::endl;
-    for (Event all : classes) {
-        std::cout << all.name << " - " << std::put_time(&all.datetime, "%c") << std::endl;
-    }
-    for (Event all : activities) {
-        std::cout << all.name << " - " << std::put_time(&all.datetime, "%c") << std::endl;
-    }
-    for (Event all : commitments) {
-        std::cout << all.name << " - " << std::put_time(&all.datetime, "%c") << std::endl;
-    }
-    for (Event all : reminders) {
-        std::cout << all.name << " - " << std::put_time(&all.datetime, "%c") << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-void Schedule::removeClass(const std::string& name) {
-    for (std::vector<Event>::iterator it = classes.begin(); it != classes.end(); ++it) {
-        if (it->name == name) {
-            classes.erase(it);
-            break;
-        }
-    }
-}
-
-void Schedule::removeActivity(const std::string& name) {
-    for (std::vector<Event>::iterator it = activities.begin(); it != activities.end(); ++it) {
-        if (it->name == name) {
-            activities.erase(it);
-            break;
-        }
-    }
-}
-
-
-void Schedule::removeCommitment(const std::string& name) {
-    for (std::vector<Event>::iterator it = commitments.begin(); it != commitments.end(); ++it) {
-        if (it->name == name) {
-            commitments.erase(it);
-            break;
-        }
-    }
-}
-
-void Schedule::removeReminder(const std::string& name) {
-    for (std::vector<Event>::iterator it = reminders.begin(); it != reminders.end(); ++it) {
-        if (it->name == name) {
-            reminders.erase(it);
-            break;
-        }
-    }
-}
-
-void Schedule::editClass(const std::string& name, const std::tm& datetime) {
-    for (Event& edit : classes) {
-        if (edit.name == name) {
-            edit.datetime = datetime;
-            break;
-        }
-    }
-}
-
-void Schedule::editActivity(const std::string& name, const std::tm& datetime) {
-    for (Event& edit : activities) {
-        if (edit.name == name) {
-            edit.datetime = datetime;
-            break;
-        }
-    }
-}
-
-void Schedule::editCommitment(const std::string& name, const std::tm& datetime) {
-    for (Event& edit : commitments) {
-        if (edit.name == name) {
-            edit.datetime = datetime;
-            break;
-        }
-    }
-}
-
-void Schedule::editReminder(const std::string& name, const std::tm& datetime) {
-    for (Event& edit : reminders) {
-        if (edit.name == name) {
-            edit.datetime = datetime;
-            break;
-        }
-    }
-}
-void Schedule::saveSchedule() {
-    std::ofstream classFile("Class.txt"), activityFile("Activity.txt"), commitmentFile("Commitment.txt"), reminderFile("Reminder.txt");
-
-    if (classFile.is_open()) {
-        for (const Event& save : classes) {
-            classFile << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
-        }
-        classFile.close();
-    }
-
-    if (activityFile.is_open()) {
-        for (const Event& save : activities) {
-            activityFile << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
-        }
-        activityFile.close();
-    }
-
-    if (commitmentFile.is_open()) {
-        for (const Event& save : commitments) {
-            commitmentFile << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
-        }
-        commitmentFile.close();
-    }
-
-    if (reminderFile.is_open()) {
-        for (const Event& save : reminders) {
-            reminderFile << save.name << " " << std::put_time(&save.datetime, "%c") << std::endl;
-        }
-        reminderFile.close();
-    }
-}
-
-void Schedule::loadSchedule() {
-    loadEventsFromFile("Class.txt", "class");
-    loadEventsFromFile("Activity.txt", "activity");
-    loadEventsFromFile("Commitment.txt", "commitment");
-    loadEventsFromFile("Reminder.txt", "reminder");
-}
-
-void Schedule::loadEventsFromFile(const std::string& filename, const std::string& type) {
-    std::ifstream file(filename);
-    if (file.is_open()) {
-        std::string line;
-        while (std::getline(file, line)) {
-            std::istringstream iss(line);
-            std::string name;
-            std::tm datetime;
-            iss >> name;
-            std::string datetimeString;
-            iss >> datetimeString;
-            std::istringstream datetimeStream(datetimeString);
-            datetimeStream >> std::get_time(&datetime, "%c");
-            if (type == "class") {
-                addClass(name, datetime);
-            } else if (type == "activity") {
-                addActivity(name, datetime);
-            } else if (type == "commitment") {
-                addCommitment(name, datetime);
-            } else if (type == "reminder") {
-                addReminder(name, datetime);
-            }
-        }
-        file.close();
-    }
+    static int count = 0;
+    std::cout << "Destructing Schedule #" << ++count << ". Saving classes..." << std::endl;
+    saveClass();
 }

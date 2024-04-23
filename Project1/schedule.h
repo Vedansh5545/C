@@ -3,10 +3,15 @@
 
 #include "main.h"
 
+
 struct Event {
     std::string name;
     std::tm datetime;
+
+    Event() : name(""), datetime() {} // Default constructor
+    Event(const std::string& n, const std::tm& dt) : name(n), datetime(dt) {} // Parameterized constructor
 };
+
 
 class Schedule {
 private:
@@ -14,40 +19,26 @@ private:
     std::vector<Event> activities;
     std::vector<Event> commitments;
     std::vector<Event> reminders;
+    static Schedule* instance;
+
+
 
 public:
+    static Schedule* getInstance() {
+        if (instance == nullptr) {
+            instance = new Schedule();
+        }
+        return instance;
+    }
     Schedule();
     ~Schedule();
 
-    void addClass(const std::string& name, const std::tm& datetime);
-    void addActivity(const std::string& name, const std::tm& datetime);
-    void addCommitment(const std::string& name, const std::tm& datetime);
-    void addReminder(const std::string& name, const std::tm& datetime);
-
-    void displaySchedule();
-    void displayReminders();
-    void displayUpcoming();
-    void displayDaily();
-    void displayWeekly();
-    void displayMonthly();
-    void displayYearly();
-    void displayAll();
-
-    void removeClass(const std::string& name);
-    void removeActivity(const std::string& name);
-    void removeCommitment(const std::string& name);
-    void removeReminder(const std::string& name);
-
-    void editClass(const std::string& name, const std::tm& datetime);
-    void editActivity(const std::string& name, const std::tm& datetime);
-    void editCommitment(const std::string& name, const std::tm& datetime);
-    void editReminder(const std::string& name, const std::tm& datetime);
-
-    void saveSchedule();
-    void loadSchedule();
-    void loadEventsFromFile(const std::string& filename, const std::string& type);
-    
-
+    void addClass();
+    void removeClass();
+    void editClass();
+    void saveClass();
+    void loadClass();
+    void saveAllClasses();
 };
 
 #endif // SCHEDULE_H

@@ -88,7 +88,7 @@ void Schedule::loadClass() {
             classes.push_back(e);
         }
         file.close();
-        std::cout << "Classes loaded from file." << std::endl;
+
     } else {
         std::cout << "Unable to open file for loading classes." << std::endl;
     }
@@ -105,10 +105,10 @@ void Schedule::saveClass() {
                 char buf[80];
                 strftime(buf, sizeof(buf), "%m/%d/%Y %H:%M", &e.datetime);
                 file << e.name << " " << buf << std::endl;
-                std::cout << "Final save: Writing to file: " << e.name << " " << buf << std::endl;
+
             }
             file.flush();
-            std::cout << "Final classes saved to file. Total classes written: " << classes.size() << std::endl;
+
         }
         file.close();
     } else {
@@ -119,22 +119,27 @@ void Schedule::saveClass() {
 
 Schedule::Schedule() {
     static int count = 0;
-    std::cout << "Constructing Schedule #" << ++count << ". Loading classes..." << std::endl;
+
     loadClass();
     loadActivity();
     loadCommitment();
     loadReminder();
-    std::cout << "Classes loaded from file at startup. Total classes: " << classes.size() << std::endl;
+
 }
 
 Schedule::~Schedule() {
-    static int count = 0;
-    std::cout << "Destructing Schedule #" << ++count << ". Saving classes..." << std::endl;
-    saveClass();
-    saveActivity();
-    saveCommitment();
-    saveReminder();
-}
+        char saveChoice;
+        std::cout << "Do you want to save changes to the files? (Y/N): ";
+        std::cin >> saveChoice;
+        if (tolower(saveChoice) == 'y') {
+                saveClass();
+                saveActivity();
+                saveCommitment();
+                saveReminder();
+        }
+    }
+
+
 
 void Schedule::addActivity() {
     std::cout << "Enter the name of the activity: ";
@@ -223,7 +228,7 @@ void Schedule::loadActivity() {
             activities.push_back(e);
         }
         file.close();
-        std::cout << "Activities loaded from file." << std::endl;
+
     } else {
         std::cout << "Unable to open file for loading activities." << std::endl;
     }
@@ -238,7 +243,7 @@ void Schedule::saveActivity() {
             file << e.name << " " << buf << std::endl;
         }
         file.close();
-        std::cout << "Activities saved to file." << std::endl;
+
     } else {
         std::cout << "Unable to open file for saving activities." << std::endl;
     }
@@ -332,7 +337,7 @@ void Schedule::loadCommitment() {
             commitments.push_back(e);
         }
         file.close();
-        std::cout << "Commitments loaded from file." << std::endl;
+
     } else {
         std::cout << "Unable to open file for loading commitments." << std::endl;
     }
@@ -347,7 +352,7 @@ void Schedule::saveCommitment() {
             file << e.name << " " << buf << std::endl;
         }
         file.close();
-        std::cout << "Commitments saved to file." << std::endl;
+
     } else {
         std::cout << "Unable to open file for saving commitments." << std::endl;
     }
@@ -440,7 +445,7 @@ void Schedule::loadReminder() {
             reminders.push_back(e);
         }
         file.close();
-        std::cout << "Reminders loaded from file." << std::endl;
+
     } else {
         std::cout << "Unable to open file for loading reminders." << std::endl;
     }
@@ -455,9 +460,120 @@ void Schedule::saveReminder() {
             file << e.name << " " << buf << std::endl;
         }
         file.close();
-        std::cout << "Reminders saved to file." << std::endl;
+
     } else {
         std::cout << "Unable to open file for saving reminders." << std::endl;
+    }
+}
+
+void Schedule::displayClasses() const {
+    std::ifstream file("classes.txt");
+    std::cout << "\nClasses:\n";
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            std::istringstream lineStream(line);
+            std::string name, datetimePart;
+            lineStream >> name;
+            std::getline(lineStream, datetimePart);
+            std::cout << "Class: " << name << ", Scheduled at: " << datetimePart << std::endl;
+        }
+        file.close();
+    } else {
+        std::cout << "Unable to open file for reading classes." << std::endl;
+    }
+}
+
+void Schedule::displayActivities() const {
+    std::ifstream file("activities.txt");
+    std::cout << "\nActivities:\n";
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            std::istringstream lineStream(line);
+            std::string name, datetimePart;
+            lineStream >> name;
+            std::getline(lineStream, datetimePart);
+            std::cout << "Activity: " << name << ", Scheduled at: " << datetimePart << std::endl;
+        }
+        file.close();
+    } else {
+        std::cout << "Unable to open file for reading activities." << std::endl;
+    }
+}
+
+void Schedule::displayCommitments() const {
+    std::ifstream file("commitments.txt");
+    std::cout << "\nCommitments:\n";
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            std::istringstream lineStream(line);
+            std::string name, datetimePart;
+            lineStream >> name;
+            std::getline(lineStream, datetimePart);
+            std::cout << "Commitment: " << name << ", Scheduled at: " << datetimePart << std::endl;
+        }
+        file.close();
+    } else {
+        std::cout << "Unable to open file for reading commitments." << std::endl;
+    }
+}
+
+void Schedule::displayReminders() const {
+    std::ifstream file("reminders.txt");
+    std::cout << "\nReminders:\n";
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            std::istringstream lineStream(line);
+            std::string name, datetimePart;
+            lineStream >> name;
+            std::getline(lineStream, datetimePart);
+            std::cout << "Reminder: " << name << ", Scheduled at: " << datetimePart << std::endl;
+        }
+        file.close();
+    } else {
+        std::cout << "Unable to open file for reading reminders." << std::endl;
+    }
+}
+
+void Schedule::viewFullSchedule() const {
+    std::cout << "Full Schedule Overview:\n";
+    displayClasses();
+    displayActivities();
+    displayCommitments();
+    displayReminders();
+}
+
+void Schedule::resetFiles() const {
+    std::vector<std::string> filenames;
+    filenames.push_back("classes.txt");
+    filenames.push_back("activities.txt");
+    filenames.push_back("commitments.txt");
+    filenames.push_back("reminders.txt");
+
+    for (const auto& filename : filenames) {
+        std::ifstream fileCheck(filename);
+        if (fileCheck.good()) {  // Check if file exists
+            fileCheck.close();
+            // File exists, delete it
+            if (std::remove(filename.c_str()) == 0) {
+                std::cout << "Deleted existing file: " << filename << std::endl;
+            } else {
+                std::cerr << "Failed to delete file: " << filename << std::endl;
+                continue;  // Skip to next file if deletion fails
+            }
+        }
+
+        // Create new file
+        std::ofstream fileCreate(filename);
+        if (fileCreate.is_open()) {
+            std::cout << "Created new file: " << filename << std::endl;
+            fileCreate.close();
+        } else {
+            std::cerr << "Failed to create file: " << filename << std::endl;
+        }
     }
 }
 

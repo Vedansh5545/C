@@ -16,6 +16,7 @@ void Menu::displayMenu() {
     cout << "7. Integration" << endl;
     cout << "8. Feedback and Improvement" << endl;
     cout << "9. Community and Support" << endl;
+
     cout << "0. Exit" << endl;
 
     cout << "Enter your choice: ";
@@ -85,6 +86,13 @@ void Menu::displayScheduleMenu(){
     cout << "10. Add Reminder" << endl;
     cout << "11. Remove Reminder" << endl;
     cout << "12. Edit Reminder" << endl;
+    cout<<"13. Display Schedule"<<endl;
+    cout<<"14. Display Classes"<<endl;
+    cout<<"15. Display Activities"<<endl;
+    cout<<"16. Display Commitments"<<endl;
+    cout<<"17. Display Reminders"<<endl;
+    cout << "18. Delete all stored Data" << endl;
+
     cout << "0. Back" << endl;
 
 
@@ -154,6 +162,36 @@ void Menu::displayScheduleMenu(){
             schedule.editReminder();
             break;
 
+        case 13:
+            // Display Schedule
+            schedule.viewFullSchedule();
+            break;
+
+        case 14:
+            // Display Classes
+            schedule.displayClasses();
+            break;
+
+        case 15:
+            // Display Activities
+            schedule.displayActivities();
+            break;
+
+        case 16:
+            // Display Commitments
+            schedule.displayCommitments();
+            break;
+
+        case 17:
+            // Display Reminders
+            schedule.displayReminders();
+            break;
+        
+        case 18:
+            // Delete all stored Data
+            schedule.resetFiles();
+            break;
+
         
         
         case 0:
@@ -166,5 +204,5 @@ void Menu::displayScheduleMenu(){
 
 };
 
-    schedule.saveClass();
+
 }

@@ -57,6 +57,14 @@ public:
     void saveReminder();
     void loadReminder();
 
+    void displayClasses() const;
+    void displayActivities() const;
+    void displayCommitments()  const;
+    void displayReminders() const;
+    void viewFullSchedule() const;
+    
+    void resetFiles() const;
+
 };
 
 #endif // SCHEDULE_H
